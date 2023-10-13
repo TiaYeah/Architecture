@@ -20,8 +20,8 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{38048433-8160-445F-B132-F806826F20C4}</ProjectGuid>
-    <RootNamespace>Server</RootNamespace>
+    <ProjectGuid>{4A474263-E749-435B-A35E-5BA78DF1FA5C}</ProjectGuid>
+    <RootNamespace>Monitor</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.22000.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -79,7 +79,6 @@
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -91,7 +90,6 @@
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -125,13 +123,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="AppServer.cpp" />
-    <ClCompile Include="AppServerMain.cpp" />
-    <ClCompile Include="helpers\Socket.cpp" />
-    <ClCompile Include="helpers\SocketServer.cpp" />
+    <ClCompile Include="AppMonitor.cpp" />
+    <ClCompile Include="AppMonitorMain.cpp" />
+    <ClCompile Include="helpers\Console.cpp" />
+    <ClCompile Include="helpers\Process.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AppServer.h" />
+    <ClInclude Include="AppMonitor.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

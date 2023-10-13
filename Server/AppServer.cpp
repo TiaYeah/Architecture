@@ -4,10 +4,18 @@
 #include "helpers/UtilFile.h"
 #include <string>
 #include <process.h>
+#include <windows.h>
+#include <iostream>
+#include <fstream>
 
 bool Server::init(int port)
 {
     if(!m_socket.init(1000) || !m_socket.listen(port))
+        return false;
+
+    CreateDirectory("resources", NULL);
+
+    if(!fileWriteExclusive("resources\\CREATED", toStr(m_socket.port()) + "," + toStr(_getpid())))
         return false;
 
     printf("server started: port %d, pid %d\n", m_socket.port(), _getpid());
@@ -28,12 +36,25 @@ void Server::run()
 {
     while(1)
     {
+        fileWriteStr(std::string("resources\\ALIVE") + toStr(_getpid()), ""); // pet the watchdog
         std::shared_ptr<Socket> client = m_socket.accept(); // accept incoming connection
         if(!client->isValid())
             continue;
 
         int n = client->recv(); // receive data from the connection, if any
         char* data = client->data();
+        /*std::ofstream image("res.jpg", std::ios::out | std::ios::app);
+
+        char ch;
+        for (int i = 0; i < 15000; i++) {
+            ch = data[i];
+            image.put(ch);
+            std::cout << i << std::endl;
+        }
+        image.clear();
+       
+        std::cout << "Out of loop\n";*/
+
         printf("-----RECV-----\n%s\n--------------\n", n > 0 ? data : "Error");
         const std::vector<std::string>& tokens = split(data, " ");
         if(tokens.size() >= 2 && tokens[0] == "GET") // this is browser's request
