@@ -71,6 +71,34 @@ void Server::run()
             else
                 client->sendStr("HTTP/1.1 404 Not Found\r\n\r\n");
         }
+        else if (tokens.size() >= 2 && tokens[0] == "FILE") {
+            std::fstream file;
+            file.open("vssad", std::ios_base::out || std::ios_base::binary);
+            file.write(tokens[1].c_str(), n - 5);
+            file.close();
+            std::cout << "file saved";
+            //fileWrite("test.jpg", tokens[1].c_str(), tokens[1].length());
+            //std::cout << tokens[1];
+            //std::vector<std::string> splitStr = split(tokens[1], "\\");
+            //std::cout << splitStr[splitStr.size()];
+            //std::string name = "/resources/common/" + tokens[1];
+            //std::string path = ".\\resources\\common\\" + tokens[1];
+            //int prefix = 4 + tokens[1].length() + 1;
+            //int size = n - prefix;
+            //int trys = 0;
+            //if (fileExists(path)) {
+            //    while (fileExists(path) && trys < 20) {
+            //        trys++;
+            //    }
+            //    path = ".\\resources\\common\\(" + toStr(trys) + ")" + tokens[1];
+            //}
+            //// Use data, not tokens, because png hava char terminate characters
+            //// That will cause to not store all file data
+            //fileWrite(path, data + prefix, size);
+
+            //m_data.push_back(name);
+            //fileAppend("resources\\STATE", m_data.back() + "\n");
+        }
         else if(n > 0) // this is Client's request who wants to upload some data
         {
             m_data.push_back(data); // store it in the feed

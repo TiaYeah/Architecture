@@ -8,13 +8,14 @@
 #include "ctime"
 #include <fileapi.h>
 #include <iostream>
+
 #include <fstream>
 #include <timezoneapi.h>
 #include <cstdint>
 #include <filesystem>
 
 static Process sServer;
-static std::string sPort = "57822";
+static std::string sPort = "21788";
 
 bool Monitor::init()
 {
@@ -30,45 +31,35 @@ bool Monitor::init()
 
 bool Monitor::check()
 {
-    sServer.wait(1000);
-
-    const char* filename = (std::string("resources/ALIVE") + sServer.pid()).c_str();
-    std::ifstream ifs(filename);
-
-    HANDLE handle = CreateFileA((std::string("resources/ALIVE") + sServer.pid()).c_str(),0,FILE_SHARE_READ,NULL, OPEN_EXISTING, NULL, NULL);
-    FILETIME ftCreate, ftAccess, ftWrite;
-    SYSTEMTIME st, st2;
-
-    if (!GetFileTime(handle, &ftCreate, &ftAccess, &ftWrite))
-        return false;
-
-    FileTimeToSystemTime(&ftCreate, &st2);
-    GetSystemTime(&st);
-    int systemTime = st.wMinute * 60 + st.wSecond;
-    int fileAccessTime = st2.wMinute * 60 + st2.wSecond;
-    std::cout << systemTime << std::endl;
-    std::cout << fileAccessTime << std::endl;
-
-    if (systemTime - fileAccessTime > 3)
-    {
-        printf("Restarting server");
-        return false;
+    std::string filename = std::string("./resources/ALIVE" + sServer.pid());
+    struct stat buff;
+    if (fileExists(filename)) {
+        stat(filename.c_str(), &buff);
+        //std::cout << "Difference " << time(NULL) - buff.st_mtime << std::endl;
+        if (time(NULL) - buff.st_mtime > 5)
+        {
+            printf("Restarting server\n");
+            return false;
+        }
+        else {
+            return true;
+        }
     }
-    SYSTEMTIME st3;
-    FILETIME ft3;
-    GetSystemTime(&st3);
-    SystemTimeToFileTime(&st3, &ft3);
-    SetFileTime(handle, &ft3, &ftAccess, &ftWrite);
-    return true;
+    sServer.wait(3000);
+
+    return false;
 }
 
 void Monitor::reset()
 {
+    const char* createdFileName = "resources/CREATED";
+    sPort = strtok(fileReadStr(createdFileName), ",");
+
     remove("resources/CREATED");
-    const char* filename = (std::string("resources/ALIVE") + sServer.pid()).c_str();
-    if (remove(filename) != 0)
+    std::string aliveFileName = std::string("./resources/ALIVE" + sServer.pid());
+    if (remove(aliveFileName.c_str()) != 0)
     {
-        printf("Can't remove file %s\n", std::string(filename));
+        printf("Can't remove file %s\n", std::string(aliveFileName));
     }
 
     sServer.terminate();
